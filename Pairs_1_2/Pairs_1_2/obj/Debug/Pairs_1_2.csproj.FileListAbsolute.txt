@@ -7,3 +7,12 @@ C:\Users\Xiaomi\Documents\GitHub\Pairs_1_2\Pairs_1_2\obj\Debug\Pairs_1_2.csprojA
 C:\Users\Xiaomi\Documents\GitHub\Pairs_1_2\Pairs_1_2\obj\Debug\Pairs_1_2.csproj.CopyComplete
 C:\Users\Xiaomi\Documents\GitHub\Pairs_1_2\Pairs_1_2\obj\Debug\MGUPI.exe
 C:\Users\Xiaomi\Documents\GitHub\Pairs_1_2\Pairs_1_2\obj\Debug\MGUPI.pdb
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\bin\Debug\MGUPI.exe.config
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\bin\Debug\MGUPI.exe
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\bin\Debug\MGUPI.pdb
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\obj\Debug\Pairs_1_2.csprojAssemblyReference.cache
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\obj\Debug\Pairs_1_2.csproj.CopyComplete
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\obj\Debug\MGUPI.exe
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_1_2\Pairs_1_2\obj\Debug\MGUPI.pdb
