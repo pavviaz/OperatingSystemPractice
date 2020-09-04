@@ -14,7 +14,7 @@ namespace Pairs_1_2.Task
             //Directories.Func();
             //Files.Func();
             //FileSteam.Func();
-            //archive.FuncMain();
+            archive.FuncMain();
             //jsn.Func();
 
             Console.ReadKey();

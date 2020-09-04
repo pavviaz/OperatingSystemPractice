@@ -8,16 +8,15 @@ namespace Pairs_1_2.Task
         public static void FuncMain()
         {
             string sourceFile = "C://TestCatalog";
-            string zipFile = "C://TestCatalog.zip"; 
-            string targetFile = "C://TestCatalog2";
+            string targetFile = "C://TestCatalog2/archive.zip";
 
-            ZipFile.CreateFromDirectory(sourceFile, zipFile);
+            ZipFile.CreateFromDirectory(sourceFile, targetFile);
 
             Console.WriteLine($"Папка {sourceFile} архивирована"); 
 
-            ZipFile.ExtractToDirectory(zipFile, targetFile);
+            ZipFile.ExtractToDirectory(targetFile, @"C://");
 
-            Console.WriteLine($"Папка {sourceFile} разархивирована в {targetFile}");
+            Console.WriteLine($"Папка {sourceFile} разархивирована в C://");
 
         }
 
