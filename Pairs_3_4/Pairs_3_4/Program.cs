@@ -10,6 +10,7 @@ namespace Pairs_3_4
 {
     class Program
     {
+        private const int LatAlpLettCount = 26;
         private static Stopwatch stopwatch = new Stopwatch();
         private static SHA256 sha256Hash;
         static int choice;
@@ -23,6 +24,7 @@ namespace Pairs_3_4
             hashes.Add("1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad");
             hashes.Add("3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b");
             hashes.Add("74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f");
+
             while (true)
             {
                 Console.WriteLine("Avaliable keys: ");
@@ -65,41 +67,50 @@ namespace Pairs_3_4
         public static async Task<string> AsyncBruteForce(string hash, int p)
         {
 
-            bool br = false;
+            bool[] br;
+            bool end = false;
+            string result = string.Empty;
+
             var tokenSource2 = new CancellationTokenSource();
             CancellationToken ct = tokenSource2.Token;
-            string result = string.Empty;
 
             List<char[]> pulls = new List<char[]>();
             List<char> exitChars = new List<char>();
             Task[] tasks;
 
-            if (26 % p == 0)
+            if (LatAlpLettCount % p == 0)
+            {
                 tasks = new Task[p];
+                br = new bool[p];
+            }
             else
+            {
                 tasks = new Task[p + 1];
-
+                br = new bool[p + 1];
+            }
             for (int i = 0; i < p; i++)
             {
-                pulls.Add(new[] { Convert.ToChar(97 + i * (26 / p)), 'a', 'a', 'a', 'a' });
-                exitChars.Add(Convert.ToChar(97 + (i + 1) * (26 / p) - 1));
+                pulls.Add(new[] { Convert.ToChar(97 + i * (LatAlpLettCount / p)), 'a', 'a', 'a', 'a' });
+                exitChars.Add(Convert.ToChar(97 + (i + 1) * (LatAlpLettCount / p) - 1));
             }
             if (exitChars[exitChars.Count - 1] != 'z')
             {
                 pulls.Add(new[] { Convert.ToChar(Convert.ToInt32(exitChars[exitChars.Count - 1]) + 1), 'a', 'a', 'a', 'a' });
                 exitChars.Add('z');
             }
-
             for (int t = 0; t < tasks.Length; t++)
             {
                 var capi = t;
-                tasks[capi] = Task.Run(() => AsyncCoreRecursFunc(0, hash, exitChars[capi], pulls[capi], ct, ref br));
+                tasks[capi] = Task.Run(() => AsyncCoreRecursFunc(0, hash, exitChars[capi], pulls[capi], ct, ref br[capi], ref end));
             }
 
-
-            await Task.WhenAny(tasks);
+            await Task.Run(() =>
+            {
+                while (true)
+                    if (end)
+                        break;
+            });
             tokenSource2.Cancel();
-
             foreach (var vr in pulls)
             {
                 if (ComputeHash(vr) == hash)
@@ -108,10 +119,29 @@ namespace Pairs_3_4
                     break;
                 }
             }
-
             if (result != string.Empty)
                 return result;
             return "No password has been found";
+        }
+
+        public static void AsyncCoreRecursFunc(int i, string hash, char exit, char[] chars, CancellationToken token, ref bool br, ref bool end)
+        {
+            while (true)
+            {
+                if (i != 4)
+                    AsyncCoreRecursFunc(i + 1, hash, exit, chars, token, ref br, ref end);
+                if (!end && ComputeHash(chars) == hash)
+                    end = true;
+                if (chars[1] == 'z' && chars[2] == 'z' && chars[3] == 'z' && chars[4] == 'z')
+                    if (chars[0] == exit)
+                        br = true;
+                if (chars[i] == 'z' || br || token.IsCancellationRequested || end)
+                    break;
+                chars[i]++;
+            }
+            if (br || end)
+                return;
+            chars[i] = 'a';
         }
 
         public static string NonAsyncBruteForce(string hash)
@@ -138,32 +168,6 @@ namespace Pairs_3_4
             }
             if (br)
                 return;
-            chars[i] = 'a';
-        }
-
-        public static void AsyncCoreRecursFunc(int i, string hash, char exit, char[] chars, CancellationToken token, ref bool br)
-        {
-
-            while (true)
-            {
-                if (i != 4)
-                    AsyncCoreRecursFunc(i + 1, hash, exit, chars, token, ref br);
-                if (!br && ComputeHash(chars) == hash)
-                    br = true;
-
-                if (chars[1] == 'z' && chars[2] == 'z' && chars[3] == 'z' && chars[4] == 'z')
-                    if (chars[0] == exit)
-                        br = true;
-
-                if (chars[i] == 'z' || br || token.IsCancellationRequested)
-                    break;
-                chars[i]++;
-            }
-
-            if (br)
-                return;
-
-
             chars[i] = 'a';
         }
 
