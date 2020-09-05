@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Pairs_1_2",
+    "\\Pairs_1_2\\Task"
   ],
-  "SelectedNode": "\\Pairs_1_2.sln",
+  "SelectedNode": "\\Pairs_1_2\\Task\\MainClass.cs",
   "PreviewInSolutionExplorer": false
 }
