@@ -32,7 +32,7 @@ namespace Pairs_3_4
                 for (int i = 0; i < hashes.Count; i++)
                     Console.WriteLine($"{i + 1}) {hashes[i]}");
 
-                Console.WriteLine("\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (AsyncAlgorithm)");
+                Console.WriteLine("\nMenu:\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (AsyncAlgorithm)");
 
                 switch (Convert.ToInt32(Console.ReadLine()))
                 {
