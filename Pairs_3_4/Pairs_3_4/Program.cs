@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -107,8 +108,13 @@ namespace Pairs_3_4
             await Task.Run(() =>
             {
                 while (true)
+                {
                     if (end)
                         break;
+                    if(br.All(u => u))
+                        break;
+                }
+
             });
             tokenSource2.Cancel();
             foreach (var vr in pulls)
