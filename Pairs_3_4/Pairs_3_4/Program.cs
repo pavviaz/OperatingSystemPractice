@@ -18,8 +18,6 @@ namespace Pairs_3_4
         //public static bool br;
         static void Main()
         {
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            CancellationToken token = cancelTokenSource.Token;
             List<string> hashes = new List<string>();
 
             hashes.Add("1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad");
