@@ -10,12 +10,15 @@ namespace Pairs_1_2.Task
     {
         public static void Main()
         {
+            //для запуска любого задания необходимо раскомментировать соответствующую строчку
+
             //Drives.Func();
             //Directories.Func();
             //Files.Func();
             //FileSteam.Func();
-            archive.FuncMain();
+            //archive.FuncMain();
             //jsn.Func();
+            //xml.Execute();
 
             Console.ReadKey();
         }
