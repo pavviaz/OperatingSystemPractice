@@ -14,15 +14,18 @@ namespace Pairs_3_4
         private const int LatAlpLettCount = 26;
         private static Stopwatch stopwatch = new Stopwatch();
         private static SHA256 sha256Hash;
-        static int choice;
-        //public static bool br;
+        private static int choice;
         static void Main()
         {
-            List<string> hashes = new List<string>();
+            List<string> hashes = new List<string>
+            {
+                "1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad",
+                "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+                "74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f"
+            };
 
-            hashes.Add("1115dd800feaacefdf481f1f9070374a2a81e27880f187396db67958b207cbad");
-            hashes.Add("3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b");
-            hashes.Add("74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f");
+            ParallelTaskScheduler exp = new ParallelTaskScheduler();
+            Task.Factory.StartNew(count, CancellationToken.None, TaskCreationOptions.None, exp);
 
             while (true)
             {
@@ -30,7 +33,7 @@ namespace Pairs_3_4
                 for (int i = 0; i < hashes.Count; i++)
                     Console.WriteLine($"{i + 1}) {hashes[i]}");
 
-                Console.WriteLine("\nMenu:\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (AsyncAlgorithm)");
+                Console.WriteLine("\nMenu:\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (Task's)\n4) BruteForce the existing key (TaskPro's)");
 
                 switch (Convert.ToInt32(Console.ReadLine()))
                 {
@@ -63,6 +66,15 @@ namespace Pairs_3_4
             }
         }
 
+        public static void count()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine($"{i}");
+                Thread.Sleep(1000);
+            }
+        }
+
         public static async Task<string> AsyncBruteForce(string hash, int p)
         {
 
@@ -80,7 +92,7 @@ namespace Pairs_3_4
             if (LatAlpLettCount % p == 0)
             {
                 tasks = new Task[p];
-                br = new bool[p];
+                br = new bool[p];   
             }
             else
             {
@@ -107,9 +119,7 @@ namespace Pairs_3_4
             {
                 while (true)
                 {
-                    if (end)
-                        break;
-                    if(br.All(u => u))
+                    if (end || br.All(u => u))
                         break;
                 }
 
@@ -126,6 +136,10 @@ namespace Pairs_3_4
             if (result != string.Empty)
                 return result;
             return "No password has been found";
+
+
+
+
         }
 
         public static void AsyncCoreRecursFunc(int i, string hash, char exit, char[] chars, CancellationToken token, ref bool br, ref bool end)
@@ -174,6 +188,65 @@ namespace Pairs_3_4
                 return;
             chars[i] = 'a';
         }
+
+        //public static void CoreRecursFunc(string hash, char[] chars, ref bool br)
+        //{
+        //    int lastchar = chars.Length - 1;
+        //    int back = lastchar;
+        //    while (true) //chars != new []{'z' , 'z', 'z' , 'z', 'z'}
+        //    {
+
+        //        while (chars[lastchar] != 122)
+        //        {
+        //            if (ComputeHash(chars) == hash)
+        //            {
+        //                br = true;
+        //                break;
+        //            }
+        //            chars[lastchar]++;
+        //        }
+        //        if (br)
+        //            return;
+        //        while (chars[back] == 122)
+        //        {
+        //            chars[back] = 'a';
+        //            back--;
+
+        //        }
+        //        chars[back]++;
+        //        back = lastchar;
+        //    }
+
+
+
+        //}
+
+        //public static void CoreRecursFunc(string hash, char[] chars, ref bool br)
+        //{
+        //    int lastchar = chars.Length - 1;
+        //    int back = lastchar;
+        //    while (true)
+        //    {
+        //        for (int k = 97; k < 123; k++)
+        //        {
+        //            chars[lastchar] = (char)k;
+        //            if (ComputeHash(chars) == hash)
+        //            {
+        //                br = true;
+        //                break;
+        //            }
+        //        }
+        //        if (br)
+        //            return;
+        //        while (chars[back] == 122)
+        //        {
+        //            chars[back] = 'a';
+        //            back--;
+        //        }
+        //        chars[back]++;
+        //        back = lastchar;
+        //    }
+        //}
 
         public static string ComputeHash(char[] input)
         {
