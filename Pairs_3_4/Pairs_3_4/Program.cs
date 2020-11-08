@@ -15,7 +15,7 @@ namespace Pairs_3_4
         private static Stopwatch stopwatch = new Stopwatch();
         private static SHA256 sha256Hash;
         private static int choice;
-        static void Main()
+        static void Main(string[] args)
         {
             List<string> hashes = new List<string>
             {
@@ -24,46 +24,62 @@ namespace Pairs_3_4
                 "74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f"
             };
 
-            ParallelTaskScheduler exp = new ParallelTaskScheduler();
-            Task.Factory.StartNew(count, CancellationToken.None, TaskCreationOptions.None, exp);
-
-            while (true)
+            for (int i = 0; i < 100; i++)
             {
-                Console.WriteLine("Avaliable keys: ");
-                for (int i = 0; i < hashes.Count; i++)
-                    Console.WriteLine($"{i + 1}) {hashes[i]}");
-
-                Console.WriteLine("\nMenu:\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (Task's)\n4) BruteForce the existing key (TaskPro's)");
-
-                switch (Convert.ToInt32(Console.ReadLine()))
-                {
-                    case 1:
-                        Console.WriteLine("\nEnter SHA-256 hash: ");
-                        hashes.Add(Console.ReadLine());
-                        Console.WriteLine("Hash has been added successfully\n");
-                        break;
-                    case 2:
-                        Console.Write($"Choose hash (1 - {hashes.Count}): ");
-                        choice = Convert.ToInt32(Console.ReadLine()) - 1;
-                        stopwatch.Start();
-                        Console.WriteLine($"\nResult: {NonAsyncBruteForce(hashes[choice])}. Elapsed time: {Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000} seconds");
-                        stopwatch.Stop();
-                        stopwatch.Reset();
-                        break;
-                    case 3:
-                        Console.Write($"Choose hash (1 - {hashes.Count}): ");
-                        choice = Convert.ToInt32(Console.ReadLine()) - 1;
-                        Console.Write("Enter amount of parallel threads(1 - 7): ");
-                        int p = Convert.ToInt32(Console.ReadLine());
-                        stopwatch.Start();
-                        Console.WriteLine($"\nResult: {AsyncBruteForce(hashes[choice], p).Result}. Elapsed time: {Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000} seconds");
-                        stopwatch.Stop();
-                        stopwatch.Reset();
-                        break;
-                }
-
-                Console.ReadKey();
+                Console.WriteLine("number = " + i);
+                Thread.Sleep(500);
             }
+                
+
+            //ParallelTaskScheduler exp = new ParallelTaskScheduler();
+            //Task.Factory.StartNew(count, CancellationToken.None, TaskCreationOptions.None, exp);
+            if (args.Contains("-f"))
+            {
+                Console.WriteLine($"\nResult: {AsyncBruteForce(hashes[choice], 1).Result}");
+            }
+            else
+            {
+                while (true)
+                {
+                    Console.WriteLine("Avaliable keys: ");
+                    for (int i = 0; i < hashes.Count; i++)
+                        Console.WriteLine($"{i + 1}) {hashes[i]}");
+
+                    Console.WriteLine("\nMenu:\n1) Add key\n2) BruteForce the existing key (NonAsyncAlgorithm)\n3) BruteForce the existing key (Task's)\n4) BruteForce the existing key (TaskPro's)");
+
+                    switch (Convert.ToInt32(Console.ReadLine()))
+                    {
+                        case 1:
+                            Console.WriteLine("\nEnter SHA-256 hash: ");
+                            hashes.Add(Console.ReadLine());
+                            Console.WriteLine("Hash has been added successfully\n");
+                            break;
+                        case 2:
+                            Console.Write($"Choose hash (1 - {hashes.Count}): ");
+                            choice = Convert.ToInt32(Console.ReadLine()) - 1;
+                            stopwatch.Start();
+                            Console.WriteLine($"\nResult: {NonAsyncBruteForce(hashes[choice])}. Elapsed time: {Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000} seconds");
+                            stopwatch.Stop();
+                            stopwatch.Reset();
+                            break;
+                        case 3:
+                            Console.Write($"Choose hash (1 - {hashes.Count}): ");
+                            choice = Convert.ToInt32(Console.ReadLine()) - 1;
+                            Console.Write("Enter amount of parallel threads(1 - 7): ");
+                            int p = Convert.ToInt32(Console.ReadLine());
+                            stopwatch.Start();
+                            Console.WriteLine($"\nResult: {AsyncBruteForce(hashes[choice], p).Result}. Elapsed time: {Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000} seconds");
+                            stopwatch.Stop();
+                            stopwatch.Reset();
+                            break;
+                    }
+
+                    Console.ReadKey();
+                }
+            }
+
+            Console.ReadKey();
+
         }
 
         public static void count()
@@ -155,7 +171,11 @@ namespace Pairs_3_4
                         br = true;
                 if (chars[i] == 'z' || br || token.IsCancellationRequested || end)
                     break;
+
+                Console.WriteLine(new string(chars));
+
                 chars[i]++;
+
             }
             if (br || end)
                 return;

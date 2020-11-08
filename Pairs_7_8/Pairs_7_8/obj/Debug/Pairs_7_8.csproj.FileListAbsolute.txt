@@ -1,0 +1,6 @@
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\bin\Debug\Pairs_7_8.exe.config
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\bin\Debug\Pairs_7_8.exe
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\bin\Debug\Pairs_7_8.pdb
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\obj\Debug\Pairs_7_8.csprojAssemblyReference.cache
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\obj\Debug\Pairs_7_8.exe
+C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_7_8\Pairs_7_8\obj\Debug\Pairs_7_8.pdb
