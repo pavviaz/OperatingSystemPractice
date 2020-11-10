@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,20 +23,23 @@ namespace Pairs_7_8
 
         internal int _changablePrior;
 
+        internal int _Counter;
+
+        internal bool _Stopped = false;
 
 
         public Descriptor(Process process, ProcessPriorities priority = ProcessPriorities.AVERAGE)
         {
             _internalProcess = process;
             Priority = priority;
-            _changablePrior = (int) Priority;
+            _changablePrior = (int)Priority;
         }
 
         public Descriptor(int PID, ProcessPriorities priority = ProcessPriorities.AVERAGE)
         {
             _internalProcess = Process.GetProcessById(PID);
             Priority = priority;
-            _changablePrior = (int) Priority;
+            _changablePrior = (int)Priority;
         }
 
         public void SetPriority(ProcessPriorities priority)
@@ -52,12 +53,12 @@ namespace Pairs_7_8
     {
 
         private List<Descriptor> _readyProcesses;
-        //private List<Descriptor> _awaitingProcesses;
+        private List<Descriptor> _awaitingProcesses;
         private Descriptor _currentProcess;
         private int[] _priorityNumber;
         private const int TimeSlice = 20; //на самом деле минимальное нормальное время такта ~30мс
-        private int ptr = 0;
-        private bool _allTasksEnded = false;
+        private int ptr;
+        private bool _allTasksEnded;
 
         public ProScheduler(params Descriptor[] parameters)
         {
@@ -92,22 +93,25 @@ namespace Pairs_7_8
             Console.CursorVisible = false;
             KeyListener();
             Execute();
-            
+
         }
         private void Execute()
         {
-            
+
             while (true)
             {
                 Stopwatch s = new Stopwatch();
                 s.Start();
 
                 _currentProcess = Scheduler();
-                ProcessExtension.Resume(_currentProcess._internalProcess);
-                Thread.Sleep(TimeSlice);
-                ProcessExtension.Suspend(_currentProcess._internalProcess);
+                _currentProcess._Counter++;
 
-                
+                _currentProcess._internalProcess.Resume();
+                Thread.Sleep(TimeSlice);
+                _currentProcess._internalProcess.Suspend();
+
+
+
                 //s.Stop();
                 //Console.WriteLine($"Elapsed time: {s.ElapsedMilliseconds}, name = {_currentProcess._internalProcess.ProcessName}, PID = {_currentProcess._internalProcess.Id}, IP = {_currentProcess.Priority}, CP = {_currentProcess._changablePrior}");
 
@@ -128,6 +132,7 @@ namespace Pairs_7_8
 
                 s.Stop();
                 Console.WriteLine("\n\nReal Elapsed Time= " + s.ElapsedMilliseconds);
+                Console.WriteLine("\n\nControls: Backspace - change process ; \\ - increment priority ; Enter - decrement priority");
 
             }
 
@@ -135,8 +140,8 @@ namespace Pairs_7_8
 
         private void UIUpdate(long ElapsedTIme)
         {
-            
-            Clear(1,1, Console.BufferWidth, 25);
+
+            Clear(1, 1, Console.BufferWidth, 25);
             //Console.Write("t = " + ptr);
 
             int left = 1, top = 1;
@@ -146,13 +151,13 @@ namespace Pairs_7_8
 
             for (int i = 0; i < _readyProcesses.ToArray().Length; i++)
             {
-                
 
-                genstr = $"| NAME : {_readyProcesses[i]._internalProcess.ProcessName} , PID : {_readyProcesses[i]._internalProcess.Id} , Pr. : {_readyProcesses[i].Priority} , Ch.Pr. : {_readyProcesses[i]._changablePrior}";
 
-                    
+                genstr = $"| NAME : {_readyProcesses[i]._internalProcess.ProcessName} , PID : {_readyProcesses[i]._internalProcess.Id} , Pr. : {_readyProcesses[i].Priority} , Ch.Pr. : {_readyProcesses[i]._changablePrior} , CallCount : {_readyProcesses[i]._Counter}";
 
-                
+
+
+
                 //$"\t| {process._internalProcess.Id} |" +
                 //$"\t| {process} |" +
                 //$"\t| {} |" +
@@ -208,7 +213,7 @@ namespace Pairs_7_8
                 {
                     switch (Console.ReadKey().KeyChar)
                     {
-                        case (char) ConsoleKey.Backspace:
+                        case (char)ConsoleKey.Backspace:
                             if (ptr < _readyProcesses.Count - 1)
                                 ptr++;
                             else
@@ -225,7 +230,7 @@ namespace Pairs_7_8
                                     break;
                             }
                             break;
-                        case (char) ConsoleKey.Enter: //понизить приор
+                        case (char)ConsoleKey.Enter: //понизить приор
                             switch (_readyProcesses[ptr].Priority)
                             {
                                 case ProcessPriorities.MAX:
@@ -235,6 +240,12 @@ namespace Pairs_7_8
                                     _readyProcesses[ptr].Priority = ProcessPriorities.LOW;
                                     break;
                             }
+                            break;
+                        case (char)ConsoleKey.D0:
+                            _readyProcesses[ptr]._internalProcess.Kill();
+                            break;
+                        case ' ':
+                            _readyProcesses[ptr]._Stopped = !_readyProcesses[ptr]._Stopped;
                             break;
                     }
                 }
@@ -269,11 +280,11 @@ namespace Pairs_7_8
             {
                 if (k == i)
                     continue;
-                
-                if(_readyProcesses[k].Priority == ProcessPriorities.MAX && _readyProcesses[k]._changablePrior < (int) ProcessPriorities.MAX)
+
+                if (_readyProcesses[k].Priority == ProcessPriorities.MAX && _readyProcesses[k]._changablePrior < (int)ProcessPriorities.MAX)
                     _readyProcesses[k]._changablePrior++;
 
-                if(_readyProcesses[k].Priority == ProcessPriorities.AVERAGE && _readyProcesses[k]._changablePrior < (int) ProcessPriorities.AVERAGE)
+                if (_readyProcesses[k].Priority == ProcessPriorities.AVERAGE && _readyProcesses[k]._changablePrior < (int)ProcessPriorities.AVERAGE)
                     _readyProcesses[k]._changablePrior++;
 
             }
@@ -357,7 +368,7 @@ namespace Pairs_7_8
 
         public static void InterruptConsole()
         {
-            var hWnd = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+            var hWnd = Process.GetCurrentProcess().MainWindowHandle;
             PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
         }
     }
@@ -370,25 +381,47 @@ namespace Pairs_7_8
             int rnd = rndNum.Next(Low, High);
             return rnd;
         }
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
+
+            //Process[] processes = new Process[5];
+            //for (int i = 0; i < processes.Length; i++)
+            //    processes[i] = new Process();
+
+            //processes[0].StartInfo.FileName =
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+            //processes[1].StartInfo.FileName =
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+            //processes[2].StartInfo.FileName =
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+            //processes[3].StartInfo.FileName =
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+            //processes[4].StartInfo.FileName =
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+
+            //Descriptor one = new Descriptor(processes[0], ProcessPriorities.MAX);
+            //Descriptor two = new Descriptor(processes[1], ProcessPriorities.AVERAGE);
+            //Descriptor thr = new Descriptor(processes[2], ProcessPriorities.MAX);
+            //Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
+            //Descriptor fif = new Descriptor(processes[4], ProcessPriorities.LOW);
+
+            //ProScheduler PS = new ProScheduler(one, two, four);
+            //PS.LaunchScheduler();
 
             Process[] processes = new Process[5];
             for (int i = 0; i < processes.Length; i++)
                 processes[i] = new Process();
 
-
-
             processes[0].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+                "C:\\WINDOWS\\system32\\mspaint.exe";
             processes[1].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+                "C:\\WINDOWS\\system32\\mspaint.exe";
             processes[2].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+                "C:\\WINDOWS\\system32\\mspaint.exe";
             processes[3].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+                "C:\\WINDOWS\\system32\\mspaint.exe";
             processes[4].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
+                "C:\\WINDOWS\\system32\\mspaint.exe";
 
             Descriptor one = new Descriptor(processes[0], ProcessPriorities.MAX);
             Descriptor two = new Descriptor(processes[1], ProcessPriorities.AVERAGE);
@@ -396,10 +429,9 @@ namespace Pairs_7_8
             Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
             Descriptor fif = new Descriptor(processes[4], ProcessPriorities.LOW);
 
-            ProScheduler PS = new ProScheduler(four, fif, one, two, thr);
+            ProScheduler PS = new ProScheduler(one, fif, thr);
             PS.LaunchScheduler();
-            
-            
+
 
             Console.WriteLine("\n\nEND");
             Console.ReadKey();
