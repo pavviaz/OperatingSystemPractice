@@ -15,24 +15,28 @@ namespace Pairs_9_10
         private const int MemoryBites = 65535;
         private const int SWAP_LIMIT = 524288;
 
-        public static bool WriteInExecution = false;
+        public static bool WriteInExecution;
         public static string[] textFromFile;
-        public static string index = "";
-        public static string lastProcess;
-        public static string lastCommand;
-        public static string lastArguments;
+        public static string index_RAM = "";
+        public static string index_SWAP = "";
 
-        private static int SWAP_SIZE = 0;
-        private static int previousWriteKB = 0;
+        public static string lastProcess_RAM;
+        public static string lastProcess_SWAP;
+        public static string lastCommand_RAM;
+        public static string lastCommand_SWAP;
+        public static string lastArguments_RAM;
+        public static string lastArguments_SWAP;
 
-        private static List<string> _processes = new List<string>
+        public static int SWAP_SIZE = 0;
+
+        private static readonly List<string> _processes = new List<string>
         {
             "PROCESS_1",
             "PROCESS_2",
             "PROCESS_3"
         };
 
-        private static List<string> _programData = new List<string>
+        private static readonly List<string> _programData = new List<string>
         {
             "mov",
             "psh",
@@ -43,12 +47,8 @@ namespace Pairs_9_10
             "inc",
             "dec"
         };
-        public MemoryControl()
-        {
 
-        }
-
-        public static void RAM_Initialization()
+        public static void Initialization()
         {
             File.WriteAllText(RAM_Way, String.Empty);
 
@@ -70,10 +70,8 @@ namespace Pairs_9_10
             List<char> arrChar = new List<char>();
             byte[] array;
 
-            //previousWriteKB = writeKB;
             if (SWAP_SIZE == 0)
                 File.WriteAllText(SWAP_Way, String.Empty);
-            //SWAP_SIZE += writeKB;
 
             if (SWAP_SIZE >= SWAP_LIMIT)
                 throw new Exception("SWAP_FILE_OVERFLOW");
@@ -87,10 +85,13 @@ namespace Pairs_9_10
                 }
                     
                 arr[k] += _processes[RandNumber(0, _processes.Count - 1)];
+                lastProcess_SWAP = arr[k].Remove(0, 8);
                 arr[k + 1] += _programData[RandNumber(0, _programData.Count - 1)];
+                lastCommand_SWAP = arr[k + 1].Remove(0, 8);
                 arr[k + 2] += $"%{RandNumber(10, 99)} , %{RandNumber(10, 99)}";
+                index_SWAP = arr[k + 3];
                 arr[k + 3] += $"%{RandNumber(10, 99)} , %{RandNumber(10, 99)}";
-
+                lastArguments_SWAP = arr[k + 2].Remove(0, 8) + " ; " + arr[k + 3].Remove(0, 8);
                 //Thread.Sleep(1);
             }
 
@@ -107,30 +108,21 @@ namespace Pairs_9_10
             {
                 fstream.Write(array, 0, array.Length);
             }
-
-            //using (FileStream fstream = new FileStream(SWAP_Way, FileMode.Append))
-            //{
-            //    for (int i = SWAP_SIZE - previousWriteKB; i < SWAP_SIZE; i++)
-            //    { 
-            //        array = Encoding.Default.GetBytes($"\n");
-            //        fstream.Write(array, 0, array.Length);
-            //    }
-            //}
-
-
+            WriteInExecution = false;
 
         }
 
         public static void Program_Loading_To_RAM(int writeKB)
         {
+
             WriteInExecution = true;
 
-            if (index.Length != 0 && Convert.ToInt32(index.Replace("[", "").Replace("]", "")) >= MemoryBites) //swapping
+            if (index_RAM.Length != 0 && Convert.ToInt32(index_RAM.Replace("[", "").Replace("]", "")) >= MemoryBites) //swapping
             {
-                Console.BackgroundColor = ConsoleColor.Green;
                 Program_Loading_To_SWAP(writeKB);
                 return;
             }
+
 
             byte[] array;
             List<char> arr = new List<char>();
@@ -161,13 +153,13 @@ namespace Pairs_9_10
                 if (k + 1 >= textFromFile.Length || k + 2 >= textFromFile.Length || k + 3 >= textFromFile.Length)
                     break;
                 textFromFile[k] += _processes[RandNumber(0, _processes.Count - 1)];
-                lastProcess = textFromFile[k].Remove(0, 7);
+                lastProcess_RAM = textFromFile[k].Remove(0, 7);
                 textFromFile[k + 1] += _programData[RandNumber(0, _programData.Count - 1)];
-                lastCommand = textFromFile[k + 1].Remove(0, 7);
+                lastCommand_RAM = textFromFile[k + 1].Remove(0, 7);
                 textFromFile[k + 2] += $"%{RandNumber(10, 99)} , %{RandNumber(10, 99)}";
-                index = textFromFile[k + 3];
+                index_RAM = textFromFile[k + 3];
                 textFromFile[k + 3] += $"%{RandNumber(10, 99)} , %{RandNumber(10, 99)}";
-                lastArguments = textFromFile[k + 2].Remove(0, 7) + " ; " + textFromFile[k + 3].Remove(0, 7);
+                lastArguments_RAM = textFromFile[k + 2].Remove(0, 7) + " ; " + textFromFile[k + 3].Remove(0, 7);
 
                 //Thread.Sleep(1);
             }
@@ -186,7 +178,6 @@ namespace Pairs_9_10
             using (FileStream fstream = new FileStream(RAM_Way, FileMode.Open))
             {
                 fstream.Write(array, 0, array.Length);
-
             }
 
             WriteInExecution = false;
@@ -208,7 +199,7 @@ namespace Pairs_9_10
             //Task a = new Task(() => Update());
             //a.Start();
             KeyListener();
-            MemoryControl.RAM_Initialization();
+            MemoryControl.Initialization();
 
             //y = true;
 
@@ -231,7 +222,8 @@ namespace Pairs_9_10
             Clear(1, 1, Console.BufferWidth, 25);
             //Console.Write("t = " + ptr);
             Console.SetCursorPosition(1, 1);
-            Console.Write("PRESS SPACE TO WRITE 16KB TO RAM: ");
+            Console.Write("PRESS SPACE TO WRITE 16KB TO ");
+            Console.Write(MemoryControl.index_RAM == "[65535]" ? "SWAP_FILE: " : "RAM: ");
 
             if (!MemoryControl.WriteInExecution)
             {
@@ -247,24 +239,42 @@ namespace Pairs_9_10
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.SetCursorPosition(1, 3);
-            Console.Write($"LAST_COMMAND_EXECUTED: ");
+            Console.Write($"LAST_COMMAND_WRITTEN_TO_RAM: ");
             Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.Write(MemoryControl.lastCommand);
+            Console.Write(MemoryControl.lastCommand_RAM);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(" WITH ARGUMENTS: ");
             Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.Write(MemoryControl.lastArguments);
+            Console.Write(MemoryControl.lastArguments_RAM);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(" IN ");
             Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.Write(MemoryControl.lastProcess);
+            Console.Write(MemoryControl.lastProcess_RAM);
 
 
             Console.ForegroundColor = ConsoleColor.White;
 
             Console.SetCursorPosition(1, 5);
-            Console.Write($"LAST_CHANGED_MEM_CELL: {MemoryControl.index}");
+            if (MemoryControl.index_RAM == "[65535]")
+                Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"LAST_CHANGED_RAM_CELL: {MemoryControl.index_RAM}");
+            Console.ForegroundColor = ConsoleColor.White;
 
+            Console.SetCursorPosition(1, 7);
+            Console.Write($"SWAP_SIZE = {MemoryControl.SWAP_SIZE}");
+
+            Console.SetCursorPosition(1, 9);
+            Console.Write($"LAST_COMMAND_WRITTEN_TO_SWAP: ");
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.Write(MemoryControl.lastCommand_SWAP);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" WITH ARGUMENTS: ");
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.Write(MemoryControl.lastArguments_SWAP);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" IN ");
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.Write(MemoryControl.lastProcess_SWAP);
 
             //Console.Write(File. + " , i = " + MemoryControl.i);
 
@@ -296,7 +306,7 @@ namespace Pairs_9_10
                             try
                             {
                                 MemoryControl.Program_Loading_To_RAM(32768);
-                                Console.BackgroundColor = ConsoleColor.Black;
+                                //Console.BackgroundColor = ConsoleColor.Black;
                             }
                             catch (Exception e)
                             {
