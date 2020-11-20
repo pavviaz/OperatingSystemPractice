@@ -24,18 +24,23 @@ namespace Pairs_3_4
                 "74e1bb62f8dabb8125a58852b63bdf6eaef667cb56ac7f7cdba6d7305c50a22f"
             };
 
+            stopwatch.Start();
+
             for (int i = 0; i < 1000; i++)
             {
-                Console.WriteLine("number = " + i);
+                Console.WriteLine("number = " + i + ", time = " + stopwatch.ElapsedMilliseconds);
                 Thread.Sleep(50);
             }
-                
+            stopwatch.Stop();
+            stopwatch.Reset();
+
 
             //ParallelTaskScheduler exp = new ParallelTaskScheduler();
             //Task.Factory.StartNew(count, CancellationToken.None, TaskCreationOptions.None, exp);
             if (args.Contains("-f"))
             {
-                Console.WriteLine($"\nResult: {AsyncBruteForce(hashes[choice], 1).Result}");
+                Console.WriteLine("SAS");
+                //Console.WriteLine($"\nResult: {AsyncBruteForce(hashes[choice], 1).Result}");
             }
             else
             {
