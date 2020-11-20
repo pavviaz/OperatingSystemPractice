@@ -10,8 +10,8 @@ namespace Pairs_9_10
 
     class MemoryControl
     {
-        public const string RAM_Way = @"C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_9_10\Pairs_9_10\RAM.txt";
-        public const string SWAP_Way = @"C:\Users\Xiaomi\Documents\GitHub\OperatingSystemPractice\Pairs_9_10\Pairs_9_10\SWAP.txt";
+        public const string RAM_Way = @"RAM.txt";
+        public const string SWAP_Way = @"SWAP.txt";
         private const int MemoryBites = 65535;
         private const int SWAP_LIMIT = 524288;
 
@@ -51,6 +51,8 @@ namespace Pairs_9_10
         public static void Initialization()
         {
             File.WriteAllText(RAM_Way, String.Empty);
+            File.WriteAllText(SWAP_Way, String.Empty);
+
 
             using (FileStream fstream = new FileStream(RAM_Way, FileMode.OpenOrCreate))
             {
@@ -70,8 +72,8 @@ namespace Pairs_9_10
             List<char> arrChar = new List<char>();
             byte[] array;
 
-            if (SWAP_SIZE == 0)
-                File.WriteAllText(SWAP_Way, String.Empty);
+            //if (SWAP_SIZE == 0)
+            //    File.WriteAllText(SWAP_Way, String.Empty);
 
             if (SWAP_SIZE >= SWAP_LIMIT)
                 throw new Exception("SWAP_FILE_OVERFLOW");
@@ -182,6 +184,7 @@ namespace Pairs_9_10
 
             WriteInExecution = false;
         }
+
 
         private static int RandNumber(int Low, int High)
         {
