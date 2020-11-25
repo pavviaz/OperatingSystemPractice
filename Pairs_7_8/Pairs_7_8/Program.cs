@@ -53,7 +53,8 @@ namespace Pairs_7_8
     {
 
         private List<Descriptor> _readyProcesses;
-        //private List<Descriptor> _awaitingProcesses;
+        private List<Descriptor> _readyProcessesUI = new List<Descriptor>();
+        private List<Descriptor> _awaitingProcesses = new List<Descriptor>();
         private Descriptor _currentProcess;
 
         private int[] _priorityNumber;
@@ -99,20 +100,23 @@ namespace Pairs_7_8
         }
         private void Execute()
         {
-
+            foreach (var descriptor in _readyProcesses)
+                _readyProcessesUI.Add(descriptor);
+            
             while (true)
             {
                 Stopwatch s = new Stopwatch();
                 s.Start();
 
-                _currentProcess = Scheduler();
-                _currentProcess._Counter++;
+                if (_readyProcesses.Count != 0)
+                {
+                    _currentProcess = Scheduler();
 
-                _currentProcess._internalProcess.Resume();
-                Thread.Sleep(TimeSlice);
-                _currentProcess._internalProcess.Suspend();
-
-
+                    _currentProcess._internalProcess.Resume();
+                    Thread.Sleep(TimeSlice);
+                    _currentProcess._internalProcess.Suspend();
+                }
+                    
 
                 //s.Stop();
                 //Console.WriteLine($"Elapsed time: {s.ElapsedMilliseconds}, name = {_currentProcess._internalProcess.ProcessName}, PID = {_currentProcess._internalProcess.Id}, IP = {_currentProcess.Priority}, CP = {_currentProcess._changablePrior}");
@@ -125,7 +129,7 @@ namespace Pairs_7_8
                         _readyProcesses.Remove(process);
                 }
 
-                if (_readyProcesses.Count == 0)
+                if (_readyProcesses.Count == 0 && _awaitingProcesses.Count == 0)
                 {
                     _allTasksEnded = true;
                     ProcessExtension.InterruptConsole(); //симуляция нажатия клавиши, чтобы прервать ReadKey()
@@ -151,11 +155,11 @@ namespace Pairs_7_8
             string EXEC = " , EXEC |";
 
 
-            for (int i = 0; i < _readyProcesses.ToArray().Length; i++)
+            for (int i = 0; i < _readyProcessesUI.ToArray().Length; i++)
             {
 
 
-                genstr = $"| NAME : {_readyProcesses[i]._internalProcess.ProcessName} , PID : {_readyProcesses[i]._internalProcess.Id} , Pr. : {_readyProcesses[i].Priority} , Ch.Pr. : {_readyProcesses[i]._changablePrior} , CallCount : {_readyProcesses[i]._Counter}";
+                genstr = $"| NAME : {_readyProcessesUI[i]._internalProcess.ProcessName} , PID : {_readyProcessesUI[i]._internalProcess.Id} , Pr. : {_readyProcessesUI[i].Priority} , Ch.Pr. : {_readyProcessesUI[i]._changablePrior} , CallCount : {_readyProcessesUI[i]._Counter}";
 
 
 
@@ -182,7 +186,7 @@ namespace Pairs_7_8
                     Console.Write(genstr);
                 }
 
-                if (_currentProcess == _readyProcesses[i])
+                if (_currentProcess == _readyProcessesUI[i])
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.Write(EXEC);
@@ -197,6 +201,9 @@ namespace Pairs_7_8
 
                 left = Console.CursorLeft + 4;
 
+
+                if(_readyProcessesUI[i]._Stopped == true)
+                    Console.Write(" STOPPED!!!");
                 //Thread.Sleep(1000);
 
             }
@@ -216,38 +223,69 @@ namespace Pairs_7_8
                     switch (Console.ReadKey().KeyChar)
                     {
                         case (char)ConsoleKey.Backspace:
-                            if (ptr < _readyProcesses.Count - 1)
+                            if (ptr < _readyProcessesUI.Count - 1)
                                 ptr++;
                             else
                                 ptr = 0;
                             break;
                         case '\\': //повысить приор
-                            switch (_readyProcesses[ptr].Priority)
+                            switch (_readyProcessesUI[ptr].Priority)
                             {
                                 case ProcessPriorities.LOW:
-                                    _readyProcesses[ptr].Priority = ProcessPriorities.AVERAGE;
+                                    _readyProcessesUI[ptr].Priority = ProcessPriorities.AVERAGE;
                                     break;
                                 case ProcessPriorities.AVERAGE:
-                                    _readyProcesses[ptr].Priority = ProcessPriorities.MAX;
+                                    _readyProcessesUI[ptr].Priority = ProcessPriorities.MAX;
                                     break;
                             }
                             break;
                         case (char)ConsoleKey.Enter: //понизить приор
-                            switch (_readyProcesses[ptr].Priority)
+                            switch (_readyProcessesUI[ptr].Priority)
                             {
                                 case ProcessPriorities.MAX:
-                                    _readyProcesses[ptr].Priority = ProcessPriorities.AVERAGE;
+                                    _readyProcessesUI[ptr].Priority = ProcessPriorities.AVERAGE;
                                     break;
                                 case ProcessPriorities.AVERAGE:
-                                    _readyProcesses[ptr].Priority = ProcessPriorities.LOW;
+                                    _readyProcessesUI[ptr].Priority = ProcessPriorities.LOW;
                                     break;
                             }
                             break;
                         case (char)ConsoleKey.D0:
-                            _readyProcesses[ptr]._internalProcess.Kill();
+                            _readyProcessesUI[ptr]._internalProcess.Kill();
+                            ptr--;
                             break;
                         case ' ':
-                            _readyProcesses[ptr]._Stopped = !_readyProcesses[ptr]._Stopped;
+                            try
+                            {
+                                if (_readyProcessesUI[ptr]._Stopped == false)
+                                {
+                                    _readyProcessesUI[ptr]._Stopped = !_readyProcessesUI[ptr]._Stopped;
+                                    var temp = _readyProcessesUI[ptr];
+                                    _readyProcesses.Remove(temp);
+                                    _awaitingProcesses.Add(temp);
+                                    //ptr--;
+                                }
+                                else
+                                {
+                                    _readyProcessesUI[ptr]._Stopped = !_readyProcessesUI[ptr]._Stopped;
+                                    Descriptor temp;
+                                    foreach (var descriptor in _awaitingProcesses)
+                                    {
+                                        if (descriptor == _readyProcessesUI[ptr])
+                                        {
+                                            _readyProcesses.Add(descriptor);
+                                            _awaitingProcesses.Remove(descriptor);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                throw;
+                            }
+                            
                             break;
                     }
                 }
@@ -293,51 +331,11 @@ namespace Pairs_7_8
 
             #endregion
 
+            _readyProcesses[i]._Counter++;
             return _readyProcesses[i];
 
         }
-        private Descriptor SchedulerExp()
-        {
-
-            #region INDEX_FINDER
-
-            _priorityNumber = new int[_readyProcesses.Count];
-            for (int t = 0; t < _readyProcesses.Count; t++)
-                _priorityNumber[t] = _readyProcesses[t]._changablePrior;
-
-            int rnd = RandNumber(1, _priorityNumber.Sum()), sum = 0, i;
-            for (i = 0; i < _priorityNumber.Length; i++)
-            {
-                sum += _priorityNumber[i];
-                if (sum - rnd >= 0)
-                    break;
-            }
-            if (_readyProcesses[i]._changablePrior != 1)
-                _readyProcesses[i]._changablePrior--;
-
-            #endregion
-
-
-            #region UPDATE
-
-            for (int k = 0; k < _priorityNumber.Length; k++)
-            {
-                if (k == i)
-                    continue;
-
-                if (_readyProcesses[k].Priority == ProcessPriorities.MAX && _readyProcesses[k]._changablePrior < (int)ProcessPriorities.MAX)
-                    _readyProcesses[k]._changablePrior++;
-
-                if (_readyProcesses[k].Priority == ProcessPriorities.AVERAGE && _readyProcesses[k]._changablePrior < (int)ProcessPriorities.AVERAGE)
-                    _readyProcesses[k]._changablePrior++;
-
-            }
-
-            #endregion
-
-            return _readyProcesses[i];
-
-        }
+        
         private int RandNumber(int Low, int High)
         {
             return new Random(int.Parse(Guid.NewGuid().ToString().Substring(0, 8), System.Globalization.NumberStyles.HexNumber)).Next(Low, High + 1);
@@ -449,7 +447,7 @@ namespace Pairs_7_8
             Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
             Descriptor fif = new Descriptor(processes[4], ProcessPriorities.LOW);
 
-            ProScheduler PS = new ProScheduler(one);
+            ProScheduler PS = new ProScheduler(one, two, four);
             PS.LaunchScheduler();
 
             //Process[] processes = new Process[5];

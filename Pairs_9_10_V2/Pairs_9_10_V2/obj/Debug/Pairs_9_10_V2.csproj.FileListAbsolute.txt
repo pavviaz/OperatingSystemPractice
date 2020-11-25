@@ -1,0 +1,6 @@
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\bin\Debug\Pairs_9_10_V2.exe.config
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\bin\Debug\Pairs_9_10_V2.exe
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\bin\Debug\Pairs_9_10_V2.pdb
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\obj\Debug\Pairs_9_10_V2.csprojAssemblyReference.cache
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\obj\Debug\Pairs_9_10_V2.exe
+C:\Users\Xiaomi\source\repos\Pairs_9_10_V2\Pairs_9_10_V2\obj\Debug\Pairs_9_10_V2.pdb
