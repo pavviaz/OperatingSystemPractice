@@ -263,12 +263,10 @@ namespace Pairs_7_8
                                     var temp = _readyProcessesUI[ptr];
                                     _readyProcesses.Remove(temp);
                                     _awaitingProcesses.Add(temp);
-                                    //ptr--;
                                 }
                                 else
                                 {
                                     _readyProcessesUI[ptr]._Stopped = !_readyProcessesUI[ptr]._Stopped;
-                                    Descriptor temp;
                                     foreach (var descriptor in _awaitingProcesses)
                                     {
                                         if (descriptor == _readyProcessesUI[ptr])

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +18,6 @@ namespace Pairs_9_10_V2
         public static int SWAP_SIZE = 0;
         public static bool WriteInProcessRAM;
         public static bool WriteInProcessSWAP;
-        public static bool EraseInProcess;
 
         public static List<int> FreeSegmentIndex = new List<int>();
 
@@ -369,7 +365,7 @@ namespace Pairs_9_10_V2
     {
 
         public static int SegmentsToWrite = 4096;
-        public static int ProcesPointer;
+        public static int ProcessPointer;
         private static bool Error;
 
         static async Task Main(string[] args)
@@ -410,7 +406,7 @@ namespace Pairs_9_10_V2
                     Console.SetCursorPosition(1, 3);
                     Console.Write($"PRESS ENTER TO DELETE ALL");
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write($" {MemoryControl._processes[ProcesPointer]} ");
+                    Console.Write($" {MemoryControl._processes[ProcessPointer]} ");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("SEGMENTS FROM RAM AND SWAP");
 
@@ -462,15 +458,15 @@ namespace Pairs_9_10_V2
                                 SegmentsToWrite += 4096;
                             break;
                         case '\\':
-                            if (ProcesPointer == 2)
-                                ProcesPointer = 0;
+                            if (ProcessPointer == 2)
+                                ProcessPointer = 0;
                             else
-                                ProcesPointer++;
+                                ProcessPointer++;
                             break;
                         case (char)ConsoleKey.Enter:
                             try
                             {
-                                MemoryControl.DeleteProcessSegments(MemoryControl._processes[ProcesPointer]);
+                                MemoryControl.DeleteProcessSegments(MemoryControl._processes[ProcessPointer]);
                             }
                             catch (Exception e)
                             {
