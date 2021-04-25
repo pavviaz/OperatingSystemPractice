@@ -202,7 +202,7 @@ namespace Pairs_7_8
                 left = Console.CursorLeft + 4;
 
 
-                if(_readyProcessesUI[i]._Stopped == true)
+                if(_readyProcessesUI[i]._Stopped)
                     Console.Write(" STOPPED!!!");
                 //Thread.Sleep(1000);
 
@@ -424,57 +424,53 @@ namespace Pairs_7_8
         public static void Main(string[] args)
         {
             
-            Process[] processes = new Process[5];
-            for (int i = 0; i < processes.Length; i++)
-                processes[i] = new Process();
-
-            processes[0].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
-            processes[1].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
-            processes[2].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
-            processes[3].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
-            processes[4].StartInfo.FileName =
-                "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
-
-            Descriptor one = new Descriptor(processes[0], ProcessPriorities.MAX);
-            Descriptor two = new Descriptor(processes[1], ProcessPriorities.AVERAGE);
-            Descriptor thr = new Descriptor(processes[2], ProcessPriorities.MAX);
-            Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
-            Descriptor fif = new Descriptor(processes[4], ProcessPriorities.LOW);
-
-            ProScheduler PS = new ProScheduler(one, two, four);
-            PS.LaunchScheduler();
-
             //Process[] processes = new Process[5];
             //for (int i = 0; i < processes.Length; i++)
             //    processes[i] = new Process();
 
             //processes[0].StartInfo.FileName =
-            //    "C:\\WINDOWS\\system32\\mspaint.exe";
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
             //processes[1].StartInfo.FileName =
-            //    "C:\\WINDOWS\\system32\\mspaint.exe";
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
             //processes[2].StartInfo.FileName =
-            //    "C:\\WINDOWS\\system32\\mspaint.exe";
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
             //processes[3].StartInfo.FileName =
-            //    "C:\\WINDOWS\\system32\\mspaint.exe";
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
             //processes[4].StartInfo.FileName =
-            //    "C:\\WINDOWS\\system32\\mspaint.exe";
+            //    "C:\\Users\\Xiaomi\\Documents\\GitHub\\OperatingSystemPractice\\Pairs_3_4\\Pairs_3_4\\bin\\Debug\\Pairs_3_4.exe";
 
             //Descriptor one = new Descriptor(processes[0], ProcessPriorities.MAX);
             //Descriptor two = new Descriptor(processes[1], ProcessPriorities.AVERAGE);
             //Descriptor thr = new Descriptor(processes[2], ProcessPriorities.MAX);
             //Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
-            //Descriptor fif = new Descriptor(processes[4], ProcessPriorities.MAX);
+            //Descriptor fif = new Descriptor(processes[4], ProcessPriorities.LOW);
 
-            //ProScheduler PS = new ProScheduler(one, fif, thr);
+            //ProScheduler PS = new ProScheduler(one, two, four, thr, fif);
             //PS.LaunchScheduler();
 
-            int a = 11;
-            int b = 2;
-            int c = a + b;
+            Process[] processes = new Process[5];
+            for (int i = 0; i < processes.Length; i++)
+                processes[i] = new Process();
+
+            processes[0].StartInfo.FileName =
+                "C:\\WINDOWS\\system32\\mspaint.exe";
+            processes[1].StartInfo.FileName =
+                "C:\\WINDOWS\\system32\\mspaint.exe";
+            processes[2].StartInfo.FileName =
+                "C:\\WINDOWS\\system32\\mspaint.exe";
+            processes[3].StartInfo.FileName =
+                "C:\\WINDOWS\\system32\\mspaint.exe";
+            processes[4].StartInfo.FileName =
+                "C:\\WINDOWS\\system32\\mspaint.exe";
+
+            Descriptor one = new Descriptor(processes[0], ProcessPriorities.MAX);
+            Descriptor two = new Descriptor(processes[1], ProcessPriorities.AVERAGE);
+            Descriptor thr = new Descriptor(processes[2], ProcessPriorities.MAX);
+            Descriptor four = new Descriptor(processes[3], ProcessPriorities.LOW);
+            Descriptor fif = new Descriptor(processes[4], ProcessPriorities.MAX);
+
+            ProScheduler PS = new ProScheduler(one, fif, thr);
+            PS.LaunchScheduler();
 
             Console.WriteLine("\n\nEND");
             Console.ReadKey();
